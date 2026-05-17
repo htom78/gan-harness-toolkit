@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" role="img" aria-label="GAN Harness Toolkit — three Claude Code subagents in an adversarial loop">
+  <style>
+    .bg { fill: #fafaf7; }
+    .grid { stroke: #e8e6df; stroke-width: 1; }
+    .title { font: 700 64px/1.1 'Source Serif Pro', 'New York', Georgia, serif; fill: #1b1714; letter-spacing: -1px; }
+    .tag { font: 500 18px/1.4 ui-monospace, 'JetBrains Mono', 'Menlo', monospace; fill: #5a564f; }
+    .meta { font: 500 13px/1.2 ui-monospace, monospace; fill: #8a857c; letter-spacing: 0.5px; }
+    .node { fill: #ffffff; stroke-width: 1.5; }
+    .node-label { font: 600 17px/1 ui-monospace, monospace; }
+    .node-role { font: 500 12px/1.3 ui-sans-serif, system-ui, -apple-system, sans-serif; fill: #5a564f; }
+    .arrow { fill: none; stroke: #1b1714; stroke-width: 1.5; }
+    .arrow-soft { fill: none; stroke: #8a857c; stroke-width: 1.25; stroke-dasharray: 4 4; }
+    .badge { font: 600 11px/1 ui-monospace, monospace; fill: #ffffff; letter-spacing: 0.5px; }
+  </style>
+
+  <rect class="bg" width="1280" height="360"/>
+
+  <!-- subtle dot grid -->
+  <g opacity="0.6">
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#e8e6df"/>
+    </pattern>
+    <rect width="1280" height="360" fill="url(#dots)"/>
+  </g>
+
+  <!-- left column: title -->
+  <g transform="translate(72, 96)">
+    <text class="meta" y="0">A CLAUDE CODE TOOLKIT</text>
+    <text class="title" y="60">GAN Harness Toolkit</text>
+    <text class="tag" y="116">Three subagents · adversarial loop · file-system protocol</text>
+    <text class="tag" y="146" fill="#8a857c">Brief → spec → build → ruthless critique → iterate to threshold</text>
+  </g>
+
+  <!-- right column: three agent nodes + loop -->
+  <g transform="translate(820, 60)">
+
+    <!-- Planner -->
+    <g transform="translate(0, 0)">
+      <rect class="node" x="0" y="0" width="180" height="68" rx="8" stroke="#6b21a8"/>
+      <rect x="0" y="0" width="6" height="68" fill="#6b21a8" rx="2"/>
+      <text class="node-label" x="20" y="28" fill="#1b1714">gan-planner</text>
+      <text class="node-role" x="20" y="50">PM · writes spec + rubric</text>
+    </g>
+
+    <!-- Generator -->
+    <g transform="translate(220, 88)">
+      <rect class="node" x="0" y="0" width="180" height="68" rx="8" stroke="#16a34a"/>
+      <rect x="0" y="0" width="6" height="68" fill="#16a34a" rx="2"/>
+      <text class="node-label" x="20" y="28" fill="#1b1714">gan-generator</text>
+      <text class="node-role" x="20" y="50">Dev · builds · git commits</text>
+    </g>
+
+    <!-- Evaluator -->
+    <g transform="translate(0, 176)">
+      <rect class="node" x="0" y="0" width="180" height="68" rx="8" stroke="#dc2626"/>
+      <rect x="0" y="0" width="6" height="68" fill="#dc2626" rx="2"/>
+      <text class="node-label" x="20" y="28" fill="#1b1714">gan-evaluator</text>
+      <text class="node-role" x="20" y="50">QA · ruthless · scores</text>
+    </g>
+
+    <!-- arrow: planner → generator -->
+    <path class="arrow" d="M 180 34 C 200 34 200 122 220 122"/>
+    <polygon points="220,122 213,118 213,126" fill="#1b1714"/>
+
+    <!-- arrow: generator → evaluator (iteration) -->
+    <path class="arrow" d="M 220 156 C 200 156 200 210 180 210"/>
+    <polygon points="180,210 187,206 187,214" fill="#1b1714"/>
+
+    <!-- soft loop-back: evaluator → generator (next iter) -->
+    <path class="arrow-soft" d="M 180 230 C 230 230 230 144 220 144"/>
+    <polygon points="220,144 213,140 213,148" fill="#8a857c"/>
+
+    <!-- iteration label -->
+    <text class="meta" x="232" y="226" fill="#8a857c">iter + 1</text>
+
+  </g>
+
+  <!-- footer chips -->
+  <g transform="translate(72, 290)">
+    <g>
+      <rect width="92" height="22" rx="11" fill="#1b1714"/>
+      <text class="badge" x="46" y="15" text-anchor="middle">3 AGENTS</text>
+    </g>
+    <g transform="translate(104, 0)">
+      <rect width="84" height="22" rx="11" fill="#1b1714"/>
+      <text class="badge" x="42" y="15" text-anchor="middle">~15 KB</text>
+    </g>
+    <g transform="translate(196, 0)">
+      <rect width="108" height="22" rx="11" fill="#1b1714"/>
+      <text class="badge" x="54" y="15" text-anchor="middle">ZERO DEPS</text>
+    </g>
+    <g transform="translate(312, 0)">
+      <rect width="84" height="22" rx="11" fill="#1b1714"/>
+      <text class="badge" x="42" y="15" text-anchor="middle">MIT</text>
+    </g>
+  </g>
+</svg>

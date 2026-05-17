@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/banner.svg" alt="GAN Harness Toolkit — three Claude Code subagents (planner, generator, evaluator) in an adversarial loop" width="100%">
+</p>
+
 # GAN Harness Toolkit
 
 A minimal three-agent harness for Claude Code that turns a one-line brief into a working, iteratively-refined application — using a Generator/Evaluator adversarial loop inspired by GAN training and Anthropic's harness design paper (March 2026).

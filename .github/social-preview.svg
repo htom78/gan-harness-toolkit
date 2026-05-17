@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" role="img" aria-label="GAN Harness Toolkit — three Claude Code subagents in an adversarial loop">
+  <style>
+    .bg { fill: #fafaf7; }
+    .title { font: 700 96px/1.05 'Source Serif Pro', 'New York', Georgia, serif; fill: #1b1714; letter-spacing: -1.5px; }
+    .tag { font: 500 24px/1.45 ui-monospace, 'JetBrains Mono', 'Menlo', monospace; fill: #5a564f; }
+    .tag-soft { font: 500 20px/1.45 ui-monospace, monospace; fill: #8a857c; }
+    .meta { font: 600 16px/1.2 ui-monospace, monospace; fill: #8a857c; letter-spacing: 1.5px; }
+    .node { fill: #ffffff; stroke-width: 1.75; }
+    .node-label { font: 700 20px/1 ui-monospace, monospace; fill: #1b1714; }
+    .node-role { font: 500 14px/1.3 ui-sans-serif, system-ui, -apple-system, sans-serif; fill: #5a564f; }
+    .arrow { fill: none; stroke: #1b1714; stroke-width: 2; }
+    .arrow-soft { fill: none; stroke: #8a857c; stroke-width: 1.5; stroke-dasharray: 5 5; }
+    .badge { font: 700 14px/1 ui-monospace, monospace; fill: #ffffff; letter-spacing: 1px; }
+    .score { font: 700 22px/1 ui-monospace, monospace; fill: #16a34a; letter-spacing: -0.5px; }
+    .score-label { font: 500 12px/1 ui-monospace, monospace; fill: #5a564f; letter-spacing: 0.5px; }
+  </style>
+
+  <rect class="bg" width="1280" height="640"/>
+
+  <!-- subtle dot grid -->
+  <g opacity="0.55">
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#e8e6df"/>
+    </pattern>
+    <rect width="1280" height="640" fill="url(#dots)"/>
+  </g>
+
+  <!-- left column -->
+  <g transform="translate(80, 152)">
+    <text class="meta" y="0">A CLAUDE CODE TOOLKIT</text>
+    <text class="title" y="92">GAN Harness</text>
+    <text class="title" y="184">Toolkit</text>
+    <text class="tag" y="244">Three subagents · adversarial loop</text>
+    <text class="tag-soft" y="278">brief → spec → build → critique → iterate</text>
+  </g>
+
+  <!-- right column: agent loop diagram (compact, x: 720-1192) -->
+  <g transform="translate(720, 140)">
+
+    <!-- Planner: top-left -->
+    <g transform="translate(40, 0)">
+      <rect class="node" x="0" y="0" width="240" height="80" rx="10" stroke="#6b21a8"/>
+      <rect x="0" y="0" width="8" height="80" fill="#6b21a8" rx="2"/>
+      <text class="node-label" x="24" y="34">gan-planner</text>
+      <text class="node-role" x="24" y="58">PM · spec + rubric</text>
+    </g>
+
+    <!-- Generator: right -->
+    <g transform="translate(232, 140)">
+      <rect class="node" x="0" y="0" width="240" height="80" rx="10" stroke="#16a34a"/>
+      <rect x="0" y="0" width="8" height="80" fill="#16a34a" rx="2"/>
+      <text class="node-label" x="24" y="34">gan-generator</text>
+      <text class="node-role" x="24" y="58">Dev · builds · commits</text>
+    </g>
+
+    <!-- Evaluator: bottom-left -->
+    <g transform="translate(40, 280)">
+      <rect class="node" x="0" y="0" width="240" height="80" rx="10" stroke="#dc2626"/>
+      <rect x="0" y="0" width="8" height="80" fill="#dc2626" rx="2"/>
+      <text class="node-label" x="24" y="34">gan-evaluator</text>
+      <text class="node-role" x="24" y="58">QA · ruthless · scores</text>
+    </g>
+
+    <!-- arrow: planner → generator -->
+    <path class="arrow" d="M 280 40 C 340 40 340 180 232 180"/>
+    <polygon points="232,180 242,175 242,185" fill="#1b1714"/>
+
+    <!-- arrow: generator → evaluator -->
+    <path class="arrow" d="M 232 220 C 180 220 180 320 280 320"/>
+    <polygon points="280,320 270,315 270,325" fill="#1b1714"/>
+
+    <!-- soft loop-back: evaluator → generator (iter + 1) -->
+    <path class="arrow-soft" d="M 280 340 C 380 340 380 200 232 200"/>
+    <polygon points="232,200 242,195 242,205" fill="#8a857c"/>
+
+    <!-- iteration label -->
+    <text class="meta" x="296" y="276" fill="#8a857c">ITER + 1</text>
+
+  </g>
+
+  <!-- footer chips row -->
+  <g transform="translate(80, 540)">
+    <g>
+      <rect width="120" height="32" rx="16" fill="#1b1714"/>
+      <text class="badge" x="60" y="21" text-anchor="middle">3 AGENTS</text>
+    </g>
+    <g transform="translate(136, 0)">
+      <rect width="108" height="32" rx="16" fill="#1b1714"/>
+      <text class="badge" x="54" y="21" text-anchor="middle">~15 KB</text>
+    </g>
+    <g transform="translate(260, 0)">
+      <rect width="140" height="32" rx="16" fill="#1b1714"/>
+      <text class="badge" x="70" y="21" text-anchor="middle">ZERO DEPS</text>
+    </g>
+    <g transform="translate(416, 0)">
+      <rect width="96" height="32" rx="16" fill="#1b1714"/>
+      <text class="badge" x="48" y="21" text-anchor="middle">MIT</text>
+    </g>
+  </g>
+
+  <!-- reference score: bottom-right inside canvas -->
+  <g transform="translate(1192, 556)" text-anchor="end">
+    <text class="score-label" y="0">REFERENCE EXAMPLE SCORE</text>
+    <text class="score" y="26">1.00 / 1.00</text>
+  </g>
+
+</svg>

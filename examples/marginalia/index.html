@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Marginalia — a quote, daily</title>
+<style>
+  :root {
+    --paper: #f3ece1;
+    --paper-deep: #ece3d3;
+    --ink: #1b1714;
+    --ink-faded: #6b5b4a;
+    --red: #a8321f;
+    --edge: rgba(40, 25, 15, 0.18);
+    --rule: rgba(27, 23, 20, 0.30);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "EB Garamond", "Hoefler Text", Garamond, "Times New Roman", serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* paper grain via inline svg, fixed overlay */
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+
+  /* page edge shadow — gives a "page lifted off the desk" feel */
+  .page {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    padding: clamp(2rem, 4vw, 5rem) clamp(1.25rem, 5vw, 6rem);
+    background: var(--paper);
+    box-shadow:
+      inset 0 0 220px rgba(120, 85, 50, 0.22),
+      inset 0 0 0 1px rgba(120, 85, 50, 0.10);
+  }
+
+  /* monospace utility */
+  .mono {
+    font-family: "JetBrains Mono", "IBM Plex Mono", "Courier New", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-faded);
+    text-transform: uppercase;
+  }
+
+  header.masthead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+    padding-bottom: clamp(2rem, 5vw, 4rem);
+  }
+
+  .masthead .brand {
+    font-family: inherit;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+  }
+  .masthead .brand .amp {
+    color: var(--red);
+    font-style: normal;
+  }
+
+  .masthead .meta-line {
+    text-align: right;
+  }
+
+  /* main asymmetric grid: ~1.6fr quote, 1fr margin */
+  main.spread {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(220px, 0.85fr);
+    gap: clamp(2rem, 6vw, 6rem);
+    align-items: start;
+    padding-top: clamp(1rem, 4vw, 3rem);
+  }
+
+  /* the quote column sits left, with extra right-padding to feel ragged */
+  .quote-col {
+    padding-right: clamp(0rem, 4vw, 3rem);
+    padding-left: clamp(0rem, 3vw, 2rem);
+    border-left: 1px solid rgba(168, 50, 31, 0.18);
+    padding-left: clamp(1rem, 3vw, 2.5rem);
+  }
+
+  blockquote.quote {
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(2.4rem, 1rem + 4vw, 5rem);
+    line-height: 1.08;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    cursor: pointer;
+    transition: color 220ms ease;
+    /* deliberate ragged right */
+    max-width: min(28ch, 100%);
+    hyphens: manual;
+  }
+
+  blockquote.quote::first-letter {
+    font-size: 4.6em;
+    line-height: 0.82;
+    float: left;
+    padding: 0.05em 0.12em 0 0;
+    font-style: italic;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  blockquote.quote:hover { color: #2a1f17; }
+  blockquote.quote:focus-visible { outline: 2px solid var(--red); outline-offset: 6px; }
+
+  .quote .hl {
+    position: relative;
+  }
+  @media (min-width: 760px) {
+    .quote .hl { white-space: nowrap; }
+  }
+  .quote .hl::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    bottom: 0.06em;
+    height: 0.18em;
+    background: var(--red);
+    opacity: 0.85;
+    transform: skewY(-1.2deg) translateY(0.02em);
+    border-radius: 1px;
+    z-index: -1;
+    /* hand-drawn feel */
+    filter: blur(0.25px);
+  }
+
+  .rule {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    width: 5rem;
+    margin: clamp(1.6rem, 3vw, 2.8rem) 0 1.1rem 0;
+  }
+
+  cite.attribution {
+    display: block;
+    font-style: normal;
+    font-variant: small-caps;
+    font-feature-settings: "smcp" 1;
+    letter-spacing: 0.14em;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+  cite.attribution .src {
+    display: block;
+    margin-top: 0.35rem;
+    font-variant: normal;
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--ink-faded);
+    font-size: 0.9rem;
+  }
+
+  /* margin column */
+  aside.margin {
+    position: relative;
+    padding-top: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  aside.margin .label {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  aside.margin .datestamp {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 0.85rem;
+    color: var(--ink);
+    letter-spacing: 0.18em;
+  }
+
+  aside.margin .num {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    color: var(--ink);
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+  aside.margin .num .slash { color: var(--ink-faded); }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.7rem;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 11px;
+    color: var(--ink-faded);
+    letter-spacing: 0.04em;
+  }
+  .tags span::before { content: "#"; color: var(--red); opacity: 0.7; margin-right: 1px; }
+
+  /* the rubber stamp */
+  .stamp {
+    align-self: flex-start;
+    border: 2px solid var(--red);
+    color: var(--red);
+    padding: 0.35rem 0.8rem 0.3rem;
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    transform: rotate(-7deg);
+    margin-top: 0.5rem;
+    opacity: 0.88;
+    box-shadow: inset 0 0 0 1px rgba(168, 50, 31, 0.3);
+    /* faux ink unevenness */
+    background:
+      repeating-linear-gradient(
+        37deg,
+        rgba(243, 236, 225, 0) 0 6px,
+        rgba(243, 236, 225, 0.35) 6px 7px
+      );
+  }
+  .stamp .stamp-date {
+    display: block;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    font-size: 0.62rem;
+    margin-top: 0.2rem;
+    color: var(--red);
+    opacity: 0.85;
+  }
+
+  .copied {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    text-transform: lowercase;
+    opacity: 0;
+    transition: opacity 380ms ease;
+    pointer-events: none;
+    margin-top: 0;
+  }
+  .copied.show { opacity: 1; }
+
+  /* bottom margin: shuffle + colophon */
+  footer.colophon {
+    position: relative;
+    z-index: 2;
+    margin-top: clamp(3rem, 8vw, 6rem);
+    padding: 1.4rem clamp(1.25rem, 5vw, 6rem) 2.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .shuffle {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    background: transparent;
+    border: 0;
+    padding: 0.2rem 0;
+    cursor: pointer;
+    text-decoration: none;
+    position: relative;
+    transition: color 200ms ease, letter-spacing 200ms ease;
+  }
+  .shuffle::before { content: "[ "; color: var(--ink-faded); }
+  .shuffle::after  { content: " ]"; color: var(--ink-faded); }
+  .shuffle .arrow { display: inline-block; transition: transform 240ms cubic-bezier(.2,.7,.2,1); }
+  .shuffle:hover { color: var(--red); letter-spacing: 0.09em; }
+  .shuffle:hover .arrow { transform: translateX(3px) rotate(-12deg); }
+  .shuffle:focus-visible { outline: 1px dashed var(--red); outline-offset: 4px; }
+
+  .colophon .imprint {
+    font-family: "JetBrains Mono", "Courier New", monospace;
+    font-size: 10px;
+    color: var(--ink-faded);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  /* narrow screens — margin slides under the quote */
+  @media (max-width: 760px) {
+    main.spread {
+      grid-template-columns: 1fr;
+      gap: 2.4rem;
+    }
+    .quote-col { border-left: 0; padding-left: 0; padding-right: 0; }
+    blockquote.quote {
+      font-size: clamp(2rem, 6vw + 1rem, 3rem);
+      max-width: none;
+    }
+    aside.margin {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      border-top: 1px solid var(--rule);
+      padding-top: 1.4rem;
+    }
+    .stamp { margin-top: 0; }
+    header.masthead { flex-direction: column; gap: 0.4rem; }
+    .masthead .meta-line { text-align: left; }
+    footer.colophon { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  }
+
+  @media (max-width: 380px) {
+    .page { padding-left: 1rem; padding-right: 1rem; }
+    blockquote.quote { font-size: 1.7rem; }
+    blockquote.quote::first-letter { font-size: 3.6em; }
+  }
+
+  ::selection { background: rgba(168, 50, 31, 0.22); color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- paper grain filter -->
+<svg class="grain" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <filter id="paperGrain">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" stitchTiles="stitch"/>
+    <feColorMatrix values="0 0 0 0 0.42
+                           0 0 0 0 0.33
+                           0 0 0 0 0.22
+                           0 0 0 0.42 0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#paperGrain)"/>
+</svg>
+
+<div class="page">
+  <header class="masthead">
+    <div class="brand">Marginalia <span class="amp">&amp;</span> commonplace</div>
+    <div class="meta-line mono">vol. i · a quote, daily</div>
+  </header>
+
+  <main class="spread">
+    <section class="quote-col" aria-labelledby="quote">
+      <blockquote class="quote" id="quote" tabindex="0" role="button" aria-label="Click to copy quote"></blockquote>
+      <hr class="rule" />
+      <cite class="attribution" id="attribution"></cite>
+    </section>
+
+    <aside class="margin" aria-label="Margin notes">
+      <div>
+        <span class="mono label">filed</span>
+        <span class="datestamp" id="datestamp"></span>
+      </div>
+      <div>
+        <span class="mono label">entry</span>
+        <span class="num" id="num"></span>
+      </div>
+      <div>
+        <span class="mono label">marginalia</span>
+        <div class="tags" id="tags"></div>
+      </div>
+      <div class="stamp" aria-hidden="true">
+        Read
+        <span class="stamp-date" id="stampDate"></span>
+      </div>
+      <div class="copied" id="copied" aria-live="polite"></div>
+    </aside>
+  </main>
+
+  <footer class="colophon">
+    <button class="shuffle" id="shuffle" type="button" aria-label="Draw another quote">
+      draw another <span class="arrow">↩</span>
+    </button>
+    <div class="imprint">
+      Marginalia · set in Garamond · no servers were consulted
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // 12 quotes. Real attributions; "highlight" is a substring inside `text` to underline in red.
+  var QUOTES = [
+    {
+      text: "I write entirely to find out what I'm thinking, what I'm looking at, what I see and what it means.",
+      author: "Joan Didion",
+      source: "Why I Write",
+      year: 1976,
+      highlight: "what it means",
+      tags: ["essay", "process", "vision"]
+    },
+    {
+      text: "I have always imagined that paradise will be a kind of library.",
+      author: "Jorge Luis Borges",
+      source: "Poem of the Gifts",
+      year: 1960,
+      highlight: "paradise",
+      tags: ["library", "borges", "longing"]
+    },
+    {
+      text: "A classic is a book that has never finished saying what it has to say.",
+      author: "Italo Calvino",
+      source: "Why Read the Classics?",
+      year: 1981,
+      highlight: "never finished",
+      tags: ["reading", "canon", "calvino"]
+    },
+    {
+      text: "The wisest thing is time, for it brings everything to light.",
+      author: "Thales of Miletus",
+      source: "as recorded by Diogenes Laërtius",
+      year: -580,
+      highlight: "to light",
+      tags: ["time", "ancients", "wisdom"]
+    },
+    {
+      text: "Seeing comes before words. The child looks and recognizes before it can speak.",
+      author: "John Berger",
+      source: "Ways of Seeing",
+      year: 1972,
+      highlight: "before words",
+      tags: ["art", "perception", "berger"]
+    },
+    {
+      text: "To photograph is to confer importance.",
+      author: "Susan Sontag",
+      source: "On Photography",
+      year: 1977,
+      highlight: "confer importance",
+      tags: ["photography", "sontag", "attention"]
+    },
+    {
+      text: "We tell ourselves stories in order to live.",
+      author: "Joan Didion",
+      source: "The White Album",
+      year: 1979,
+      highlight: "in order to live",
+      tags: ["narrative", "didion", "survival"]
+    },
+    {
+      text: "The most beautiful experience we can have is the mysterious.",
+      author: "Albert Einstein",
+      source: "The World As I See It",
+      year: 1931,
+      highlight: "the mysterious",
+      tags: ["wonder", "science", "essay"]
+    },
+    {
+      text: "What is to give light must endure burning.",
+      author: "Viktor Frankl",
+      source: "Man's Search for Meaning",
+      year: 1946,
+      highlight: "endure burning",
+      tags: ["meaning", "frankl", "endurance"]
+    },
+    {
+      text: "All happy families are alike; each unhappy family is unhappy in its own way.",
+      author: "Leo Tolstoy",
+      source: "Anna Karenina",
+      year: 1878,
+      highlight: "in its own way",
+      tags: ["fiction", "family", "tolstoy"]
+    },
+    {
+      text: "The land was ours before we were the land's.",
+      author: "Robert Frost",
+      source: "The Gift Outright",
+      year: 1942,
+      highlight: "ours before",
+      tags: ["poetry", "place", "frost"]
+    },
+    {
+      text: "Style is the answer to everything. A fresh way to approach a dull or dangerous thing.",
+      author: "Charles Bukowski",
+      source: "On Style",
+      year: 1971,
+      highlight: "fresh way",
+      tags: ["style", "craft", "bukowski"]
+    }
+  ];
+
+  var MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+
+  function dayOfYear(d) {
+    var start = new Date(d.getFullYear(), 0, 0);
+    var diff = d - start;
+    return Math.floor(diff / 86400000);
+  }
+
+  function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+
+  function formatDate(d) {
+    return pad2(d.getDate()) + " " + MONTHS[d.getMonth()] + " " + d.getFullYear();
+  }
+
+  function shortDate(d) {
+    return pad2(d.getDate()) + " " + MONTHS[d.getMonth()];
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function renderQuoteHtml(text, highlight) {
+    var safe = escapeHtml(text);
+    if (!highlight) return safe;
+    var safeHl = escapeHtml(highlight);
+    var idx = safe.indexOf(safeHl);
+    if (idx === -1) return safe;
+    return safe.slice(0, idx)
+      + '<span class="hl">' + safeHl + '</span>'
+      + safe.slice(idx + safeHl.length);
+  }
+
+  function parseHashIndex() {
+    var h = (window.location.hash || "").replace(/^#/, "");
+    var m = h.match(/q=(\d+)/i);
+    if (!m) return null;
+    var n = parseInt(m[1], 10);
+    if (isNaN(n) || n < 0 || n >= QUOTES.length) return null;
+    return n;
+  }
+
+  function dailyIndex() {
+    var today = new Date();
+    return dayOfYear(today) % QUOTES.length;
+  }
+
+  function render(idx) {
+    var q = QUOTES[idx];
+    var today = new Date();
+
+    document.getElementById("quote").innerHTML = renderQuoteHtml(q.text, q.highlight);
+
+    var attr = document.getElementById("attribution");
+    attr.innerHTML = escapeHtml(q.author)
+      + '<span class="src">' + escapeHtml(q.source || "")
+      + (q.year ? ', ' + (q.year < 0 ? Math.abs(q.year) + " BCE" : q.year) : "")
+      + '</span>';
+
+    document.getElementById("datestamp").textContent = formatDate(today);
+    document.getElementById("num").innerHTML =
+      "№ " + pad2(idx + 1) + ' <span class="slash">/</span> ' + pad2(QUOTES.length);
+
+    var tagsEl = document.getElementById("tags");
+    tagsEl.innerHTML = "";
+    q.tags.forEach(function (t) {
+      var s = document.createElement("span");
+      s.textContent = t;
+      tagsEl.appendChild(s);
+    });
+
+    document.getElementById("stampDate").textContent = shortDate(today);
+  }
+
+  function pickRandomDifferent(currentIdx) {
+    if (QUOTES.length < 2) return currentIdx;
+    var n;
+    do { n = Math.floor(Math.random() * QUOTES.length); } while (n === currentIdx);
+    return n;
+  }
+
+  function getCurrentIndex() {
+    var fromHash = parseHashIndex();
+    return fromHash === null ? dailyIndex() : fromHash;
+  }
+
+  // initial render
+  render(getCurrentIndex());
+
+  // hash navigation (back/forward)
+  window.addEventListener("hashchange", function () {
+    render(getCurrentIndex());
+  });
+
+  // shuffle
+  document.getElementById("shuffle").addEventListener("click", function () {
+    var next = pickRandomDifferent(getCurrentIndex());
+    // setting hash triggers hashchange → render
+    window.location.hash = "q=" + next;
+  });
+
+  // copy on quote click
+  var copiedEl = document.getElementById("copied");
+  var copyTimer = null;
+  function flashCopied() {
+    copiedEl.textContent = "copied to clipboard ✓";
+    copiedEl.classList.add("show");
+    if (copyTimer) clearTimeout(copyTimer);
+    copyTimer = setTimeout(function () {
+      copiedEl.classList.remove("show");
+      setTimeout(function () {
+        if (!copiedEl.classList.contains("show")) copiedEl.textContent = "";
+      }, 420);
+    }, 1500);
+  }
+
+  function copyCurrent() {
+    var q = QUOTES[getCurrentIndex()];
+    var payload = '"' + q.text + '" — ' + q.author;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(payload).then(flashCopied, function () {
+        fallbackCopy(payload);
+      });
+    } else {
+      fallbackCopy(payload);
+    }
+  }
+
+  function fallbackCopy(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      flashCopied();
+    } catch (e) {
+      // silent — surface no error in UI
+    }
+  }
+
+  var quoteEl = document.getElementById("quote");
+  quoteEl.addEventListener("click", copyCurrent);
+  quoteEl.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      copyCurrent();
+    }
+  });
+})();
+</script>
+</body>
+</html>
